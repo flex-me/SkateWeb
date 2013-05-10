@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal">
+
+	<mx:Script>
+		<![CDATA[
+			import app.FirstSample;
+			import app.WordWrapTableTitles;
+			import app.share.EmbeddedImages;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.core.UIComponent;
+			
+			import org.component.DoPNGImage;
+			import org.component.FilledColor;
+			import org.component.FreeDrawingScript;
+			import org.component.Image;
+			import org.component.LinkArea;
+			import org.component.PNGImage;
+			import org.component.Polygon;
+			import org.component.RectangleText;
+			import org.component.RectangleTextBorder;
+			import org.component.RectangleTextContent;
+			import org.component.Segment;
+			import org.component.StrokeColor;
+			import org.component.StrokeWidth;
+			import org.component.WrapText;
+			import org.component.WrapTextBorder;
+			import org.component.WrapTextContent;
+			import org.domain.BaseFont;
+			import org.domain.ImageXObject;
+			import org.domain.RgbColor;
+			import org.facility.Assistant;
+			import org.font.FontFactory;
+			import org.font.StandardFonts;
+			import org.main.Document;
+			import org.main.DocumentUsefulTool;
+			import org.main.Trailer;
+			import org.main.Writer;
+			import org.mock.ArialFontMockData;
+			import org.mock.FontTextPageMockData;
+			import org.mock.MockDataCreator;
+			import org.mock.RectangleMockData;
+			import org.mock.TextInRectangleMockData;
+			import org.util.PNGEncoder;
+			import org.util.SaveMethod;
+			import org.util.StringTool;
+			import org.util.WrapStringsMaker;
+
+			private function addRectangleLink():Document{
+				var document:Document = new Document();
+				document.addPage();
+
+				document.setFilledColor(new FilledColor(RgbColor.Brown));
+
+				var rectangle0:org.component.Rectangle = new org.component.Rectangle(100, 700, 200, 100);
+				var linkArea0:LinkArea = new LinkArea(rectangle0, "http://www.baidu.com");
+				document.addLinkArea(linkArea0);
+				document.addRectangle(rectangle0);
+
+				var rectangle1:org.component.Rectangle = new org.component.Rectangle(100, 500, 200, 100);
+				var linkArea1:LinkArea = new LinkArea(rectangle1, "http://www.google.com");
+				document.addLinkArea(linkArea1);
+				document.addRectangle(rectangle1);
+
+				return document;
+			}
+
+			public static function drawLineGrid():Document{
+				var document:Document = new Document();
+				document.addPage();
+				Assistant.drawComplexGrid(document);
+				return document;
+			}
+
+			public static function addUIComponent(document:Document, uiComponent:UIComponent):void{
+//				var bitmapDataBuffer:BitmapData = new BitmapData(uiComponent.width, uiComponent.height, false);
+//				bitmapDataBuffer.draw(uiComponent);
+//				var bytes:ByteArray = PNGEncoder.encode(bitmapDataBuffer);
+//				var image:PNGImage = new DoPNGImage(bitmapDataBuffer, bytes);
+//				var flexImageXObject:ImageXObject = new ImageXObject();
+//				flexImageXObject.image = image;
+
+				var flexImageXObject:ImageXObject = ImageXObject.uiComponentToImageXObject(uiComponent);
+				document.addImage(new Image(flexImageXObject, 50, 400, 0.3));
+				document.addImage(new Image(flexImageXObject, 50, 100, 0.3));
+			}
+
+			private function addUiComponent():Document{
+				var document:Document = new Document();
+				document.addPage();
+				addUIComponent(document, this);
+				return document;
+			}
+
+			private function addFreeDrawingScript():Document{
+				var document:Document = new Document();
+				document.addPage();
+				Assistant.makeGrid(document);
+
+				var freeDrawingScript:String = "";
+				freeDrawingScript += "5 w" + Writer.endOfLine;
+				freeDrawingScript += "0.7 0.7 0.7 RG" + Writer.endOfLine;
+				freeDrawingScript += "0.3 0.3 0.3 rg" + Writer.endOfLine;
+				freeDrawingScript += "100 600 200 100 re" + Writer.endOfLine;
+				freeDrawingScript += "B" + Writer.endOfLine;
+				freeDrawingScript += "100 500 200 100 re" + Writer.endOfLine;
+				freeDrawingScript += "B" + Writer.endOfLine;
+
+				freeDrawingScript += "0.1 0.7 0.7 RG" + Writer.endOfLine;
+				freeDrawingScript += "100 600 m" + Writer.endOfLine;
+				freeDrawingScript += "300 600 l" + Writer.endOfLine;
+				freeDrawingScript += "S" + Writer.endOfLine;
+
+				document.addFreeDrawingScript(new FreeDrawingScript(freeDrawingScript));
+
+				return document;
+			}
+
+			private function drawPolygon():Document{
+				var document:Document = new Document();
+				document.addPage();
+				Assistant.makeGrid(document);
+
+				document.setStrokeWidth(new StrokeWidth(5));
+				document.setStrokeColor(new StrokeColor(RgbColor.Orange));
+				document.setFilledColor(new FilledColor(RgbColor.Yellow));
+
+				var polygon0:Polygon = new Polygon();
+				polygon0.addPoint(new org.component.Point(200, 600));
+				polygon0.addPoint(new org.component.Point(100, 700));
+				polygon0.addPoint(new org.component.Point(200, 800));
+				polygon0.addPoint(new org.component.Point(300, 700));
+				document.addPolygon(polygon0);
+
+				var polygon1:Polygon = new Polygon();
+				polygon1.addPoint(new org.component.Point(200, 600));
+				polygon1.addPoint(new org.component.Point(300, 500));
+				polygon1.addPoint(new org.component.Point(400, 600));
+				polygon1.addPoint(new org.component.Point(300, 700));
+				document.addPolygon(polygon1);
+
+				return document;
+			}
+
+			private function drawLine():Document{
+				var document:Document = new Document();
+				document.addPage();
+				Assistant.makeGrid(document);
+				document.setStrokeWidth(new StrokeWidth(5));
+				document.setStrokeColor(new StrokeColor(RgbColor.Orange));
+				document.addSegment(new Segment(new org.component.Point(100, 600), new org.component.Point(200, 700)));
+				document.setStrokeColor(new StrokeColor(RgbColor.PastelGreen));
+				document.addSegment(new Segment(new org.component.Point(200, 600), new org.component.Point(300, 700)));
+				return document;
+			}
+
+			public static function drawSimpleGrid():Document{
+				var document:Document = new Document();
+				document.addPage();
+				Assistant.makeGrid(document);
+				return document;
+			}
+
+			private function addTwoImages():Document{
+				var document:Document = new Document();
+				document.addPage();
+				var headerImageXObject:ImageXObject = new ImageXObject();
+				headerImageXObject.image = new PNGImage(new EmbeddedImages.Header(), "DeviceRGB");
+				headerImageXObject.shortXObjectName = "headerImageXObject";
+				document.addImage(new Image(headerImageXObject, 28.35, 661.54, 0.3));
+				var footerImageXObject:ImageXObject = new ImageXObject();
+				footerImageXObject.image = new PNGImage(new EmbeddedImages.Footer(), "DeviceRGB");
+				footerImageXObject.shortXObjectName = "footerImageXObject";
+				document.addImage(new Image(footerImageXObject, 28.35, 561.54, 0.3));
+				return document;
+			}
+
+			private static function addBigStringWrapText(document:Document):void{
+				var string:String = "Hello As-a-company,-Google-focuses-on-three-key-are-as:- hello";
+				var textAreaWidth:Number = 200;
+				var positionY:Number = 800;
+				var wrapText:WrapText = new WrapText();
+				wrapText.wrapTextContent = new WrapTextContent(string, 12, textAreaWidth, 20, 50, positionY, StandardFonts.helvetica, RgbColor.Black);
+				var wrapStringsMaker:WrapStringsMaker = new WrapStringsMaker(string, textAreaWidth, 12, StandardFonts.helvetica);
+				var strings:Array = wrapStringsMaker.separateToStrings();
+				wrapText.wrapTextBorder = new WrapTextBorder(textAreaWidth, 20, 50, positionY, RgbColor.GrassGreen, RgbColor.White, strings.length);
+				document.addWrapText(wrapText);
+			}
+
+			private static function addNormalWrapText(document:Document):void{
+				var string:String = "As a company, \nGoogle focuses on three key are as: " + 
+					"access anywhere, any time. \nÀà Ââ Çç É é È èÊê ËëÎî ÏïÔô ÛûÙùÜü Ÿÿ Ää Öö Üü ß %%";
+				var wrapText:WrapText = new WrapText();
+				wrapText.wrapTextContent = new WrapTextContent(string, 12, 520, 20, 50, 700, StandardFonts.helvetica, RgbColor.Black);
+				var wrapStringsMaker:WrapStringsMaker = new WrapStringsMaker(string, 520, 12, StandardFonts.helvetica);
+				var strings:Array = wrapStringsMaker.separateToStrings();
+
+				wrapText.wrapTextBorder = new WrapTextBorder(520, 20, 50, 700, RgbColor.GrassGreen, RgbColor.White, strings.length);
+				document.addWrapText(wrapText);
+			}
+
+			private static function addSpecialWrapText(document:Document):void{
+				var string:String = "As a company, \nGoogle focuses on three key are as: " + 
+					"access anywhere, any time. Àà Ââ Çç É é È èÊê ËëÎî ÏïÔô ÛûÙùÜü Ÿÿ Ää Öö Üü ß";
+
+				var wrapText1:WrapText = new WrapText();
+				var fontSize:Number = 12;
+				var cellRectangleWidth:Number = 500;
+				var cellRectangleHeight:Number = 20;
+				var positionX:Number = 50; 
+				var positionY:Number = 600;
+				var paddingLeft:Number = 100;
+				var paddingRight:Number = 200;
+				var baseFont:BaseFont = StandardFonts.helveticaBold;
+
+				wrapText1.wrapTextContent = new WrapTextContent(string, fontSize, cellRectangleWidth, cellRectangleHeight, 
+					positionX, positionY, baseFont, RgbColor.Black);
+				wrapText1.wrapTextContent.paddingLeft = paddingLeft;
+				wrapText1.wrapTextContent.paddingRight = paddingRight;
+				wrapText1.wrapTextContent.horizontalAlign = RectangleTextContent.RIGHT;	
+
+				var widthLimit:Number = cellRectangleWidth - paddingLeft - paddingRight;
+				var wrapStringsMaker:WrapStringsMaker = new WrapStringsMaker(string, widthLimit, fontSize, baseFont);
+				var strings:Array = wrapStringsMaker.separateToStrings();
+				wrapText1.wrapTextBorder = new WrapTextBorder(cellRectangleWidth, cellRectangleHeight, 
+					positionX, positionY, RgbColor.GrassGreen, RgbColor.Pink, strings.length);
+
+				document.addWrapText(wrapText1);
+			}
+
+			public static function addWrapText():Document{
+				var document:Document = new Document();
+				document.addPage();
+				addNormalWrapText(document);
+				addSpecialWrapText(document);
+				addBigStringWrapText(document);
+				return document;
+			}
+
+			private function addTextByObject():Document{
+				var document:Document = new Document();
+				document.addPage();
+				var text:org.component.Text = new org.component.Text("You are welcomeÄ", 72, 720, 12);
+				document.addText(text);
+				return document;
+			}
+
+			public static function addRectangleText():Document{
+				var document:Document = new Document();
+				document.addPage();
+				var rectangle:org.component.Rectangle = new org.component.Rectangle(50, 700, 450, 100);
+				var rectangleTextBorder:RectangleTextBorder = new RectangleTextBorder(rectangle, RgbColor.Yellow, RgbColor.Black, true);
+				var rectangleTextContent:RectangleTextContent = new RectangleTextContent("Hello World, girl!", 24, StandardFonts.helveticaBold, null, rectangle);
+				rectangleTextContent.horizontalAlign = RectangleTextContent.CENTER;
+				rectangleTextContent.paddingLeft = 10;
+
+				var rectangleText:RectangleText = new RectangleText(rectangleTextBorder, rectangleTextContent);
+				document.addRectangleText(rectangleText);
+				return document;
+			}
+
+			private function addRectangle():Document{
+				var document:Document = new Document();
+				document.addPage();
+				document.setStrokeWidth(new StrokeWidth(20));
+				document.setStrokeColor(new StrokeColor(new RgbColor(1.0, 0.75, 0.0)));
+				document.setFilledColor(new FilledColor(new RgbColor(0.5, 0.75, 0.5)));
+
+				var rectangle0:org.component.Rectangle = new org.component.Rectangle(100, 700, 200, 50);
+				document.addRectangle(rectangle0);
+
+				var rectangle1:org.component.Rectangle = new org.component.Rectangle(100, 600, 200, 50);
+				rectangle1.needStroke = false;
+				document.addRectangle(rectangle1);
+
+				var rectangle2:org.component.Rectangle = new org.component.Rectangle(100, 500, 200, 50);
+				rectangle2.needFilled = false;
+				document.addRectangle(rectangle2);
+
+				var rectangle3:org.component.Rectangle = new org.component.Rectangle(100, 400, 200, 50);
+				rectangle3.needStroke = false;
+				rectangle3.needFilled = false;
+				document.addRectangle(rectangle3);
+
+				var rectangle4:org.component.Rectangle = new org.component.Rectangle(100, 300, 200, 50);
+				document.addRectangle(rectangle4);
+
+				return document;		
+			}
+
+			private function setFilledColor():Document{
+				var document:Document = new Document();
+				document.addPage();
+				document.setFilledColor(new FilledColor(new RgbColor(0.5, 0.25, 0.0)));
+				document.addText(new org.component.Text("You are welcomeÄ", 72, 720, 12));
+				return document;
+			}
+
+//			public static function textPageEmbedddedFont():Document{
+//				var document:Document = new Document();
+//				document.addPage();
+//				var baseFont:BaseFont = FontFactory.createEmbeddedFont();
+//				document.addText(new org.component.Text("You are welcomeÄ", 72, 720, 12, baseFont));
+//				return document;
+//			}
+
+			private function textSpecialCharacter():Document{
+				var document:Document = new Document();
+				document.addPage();
+				document.addText(new org.component.Text("Ää Öö Üü ß", 72, 720 - 30 * 0, 24));
+				document.addText(new org.component.Text("ÀàÂâÇçÉéÈèÊêËëÎîÏïÔôÛûÙùÜüŸÿ", 72, 720 - 30 * 1, 24));
+				document.addText(new org.component.Text("ÀàÂâÇçÉéÈèÊêËëÎîÏïÔôÛûÙùÜüŸÿ", 72, 720 - 30 * 2, 24));
+				return document;
+			}
+
+//			public static function pages():Document{
+//				var document:Document = new Document();
+//				document.addPage();
+//				document.addPage();
+//				return document;
+//			}
+
+			private function textInTwoPages():Document{
+				var document:Document = new Document();
+				document.addPage();
+				document.addText(new org.component.Text("Hello World", 72, 720, 72));
+				document.addPage();
+				document.addText(new org.component.Text("You are welcome", 144, 360, 36));
+				return document;
+			}
+
+//			public static function addTextWithFont():Document{
+//				var document:Document = new Document();
+//				document.addPage();
+//				document.addText(new org.component.Text("Hello World", 72, 720, 72));
+//				document.addText(new org.component.Text("You are welcome", 144, 360, 36, StandardFonts.timesRoman));
+//				return document;
+//			}
+
+			public static function standardFonts():Document{
+				var document:Document = new Document();
+				document.addPage();
+
+				var standardFonts:Array = [
+					StandardFonts.timesRoman, 
+					StandardFonts.timesBold, 
+					StandardFonts.timesItalic, 
+					StandardFonts.timesBoldItalic, 
+					StandardFonts.helvetica, 
+					StandardFonts.helveticaBold, 
+					StandardFonts.helveticaOblique, 
+					StandardFonts.helveticaBoldOblique, 
+					StandardFonts.courier, 
+					StandardFonts.courierBold, 
+					StandardFonts.courierOblique, 
+					StandardFonts.courierBoldOblique, 
+					StandardFonts.symbol, 
+					StandardFonts.zapfDingbats
+					];
+				for(var i:int = 0 ; i < 14 ; i++){
+					var baseFont:BaseFont = standardFonts[i] as BaseFont;
+					var fontIndex:String = "Font " + i + ": ";
+					document.addText(new org.component.Text(fontIndex, 36, 800 - 24 * i, 24, standardFonts[i]));
+					var fontName:String = baseFont.fontName;
+					document.addText(new org.component.Text(fontName, 200, 800 - 24 * i, 24, standardFonts[i]));
+				}
+				return document;
+			}
+
+			private function addTextWithFontMockData():void{
+				var pdfObjects:ArrayCollection = MockDataCreator.getPdfObjects(new FontTextPageMockData());
+				var trailer:Trailer = MockDataCreator.createTrailer(pdfObjects, 8, 7);
+				var writer:Writer = new Writer(pdfObjects, trailer);
+				var byteArray:ByteArray = writer.generateFromByteArrays();
+				SaveMethod.saveByteArrayToLocal(byteArray);
+			}
+
+			private function arialFontsMockData():void{
+				var document:Document = new Document();
+				var pdfObjects:ArrayCollection = ArialFontMockData.createArialFontMockDataPdfObjects();
+				var trailer:Trailer = MockDataCreator.createTrailer(pdfObjects, 10, 9);
+				var writer:Writer = new Writer(pdfObjects, trailer);
+				var byteArray:ByteArray = writer.generateFromByteArrays();
+				SaveMethod.saveByteArrayToLocal(byteArray);
+			}
+
+			private function drawRectangle():void{
+				var document:Document = new Document();
+				var pdfObjects:ArrayCollection = MockDataCreator.getPdfObjects(new RectangleMockData());
+				var trailer:Trailer = MockDataCreator.createTrailer(pdfObjects, 1, 7);
+				var writer:Writer = new Writer(pdfObjects, trailer);
+				var byteArray:ByteArray = writer.generateFromByteArrays();
+				SaveMethod.saveByteArrayToLocal(byteArray);
+			}
+
+			private function textInRectangle():void{
+				var document:Document = new Document();
+				var pdfObjects:ArrayCollection = MockDataCreator.getPdfObjects(new TextInRectangleMockData());
+				var trailer:Trailer = MockDataCreator.createTrailer(pdfObjects, 8, 7);
+				var writer:Writer = new Writer(pdfObjects, trailer);
+				var byteArray:ByteArray = writer.generateFromByteArrays();
+				SaveMethod.saveByteArrayToLocal(byteArray);
+			}
+
+			public static function saveDocumentToLocal(document:Document):void{
+				SaveMethod.saveByteArrayToLocal(Writer.generate(document));
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox>
+		<mx:Button label="addRectangleLink" click="saveDocumentToLocal(addRectangleLink())" />	
+		<mx:Button label="drawLineGrid" click="saveDocumentToLocal(drawLineGrid())" />	
+		<mx:Button label="addUiComponent" click="saveDocumentToLocal(addUiComponent())" />	
+		<mx:Button label="WordWrapTableTitles" click="saveDocumentToLocal(WordWrapTableTitles.createDocument())" />	
+		<mx:Button label="addFreeDrawingScript" click="saveDocumentToLocal(addFreeDrawingScript())" />	
+		<mx:Button label="drawPolygon" click="saveDocumentToLocal(drawPolygon())" />	
+		<mx:Button label="drawLine" click="saveDocumentToLocal(drawLine())" />	
+		<mx:Button label="FirstSample" click="saveDocumentToLocal(FirstSample.createDocument())" />
+		<mx:Button label="drawGrid" click="saveDocumentToLocal(drawSimpleGrid())" />
+		<mx:Button label="addTwoImages" click="saveDocumentToLocal(addTwoImages())" />
+		<mx:Button label="addWrapText" click="saveDocumentToLocal(addWrapText())" />
+		<mx:Button label="addTextByObject" click="saveDocumentToLocal(addTextByObject())" />
+		<mx:Button label="addRectangleText" click="saveDocumentToLocal(addRectangleText())" />
+		<mx:Button label="addRectangle" click="saveDocumentToLocal(addRectangle())" />
+		<mx:Button label="setFilledColor" click="saveDocumentToLocal(setFilledColor())" />
+		<mx:Button label="textPageEmbedddedFont" click="saveDocumentToLocal(DocumentUsefulTool.textPageEmbedddedFont())" />
+		<mx:Button label="textSpecialCharacter" click="saveDocumentToLocal(textSpecialCharacter())" />
+		<mx:Button label="pages" click="saveDocumentToLocal(DocumentUsefulTool.pages())" />
+		<mx:Button label="textInTwoPages" click="saveDocumentToLocal(textInTwoPages())" />
+		<mx:Button label="addTextWithFont" click="saveDocumentToLocal(DocumentUsefulTool.addTextWithFont())" />
+		<mx:Button label="standardFonts" click="saveDocumentToLocal(standardFonts())" />
+	</mx:VBox>
+
+	<mx:VRule height="100%" />
+
+	<mx:VBox>
+		<mx:Button label="addTextWithFontMockData" click="addTextWithFontMockData()" />
+		<mx:Button label="arialFontsMockData" click="arialFontsMockData()" />
+		<mx:Button label="drawRectangle" click="drawRectangle()" />
+		<mx:Button label="textInRectangle" click="textInRectangle()" />
+	</mx:VBox>
+</mx:Application>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical">
+	<mx:Script>
+		<![CDATA[
+			import org.domain.StandardFont;
+			import org.font.StandardFonts;
+			import org.facade.ScaleImage;
+			import app.share.EmbeddedImages;
+			import org.component.PNGImage;
+			import org.domain.ImageXObject;
+			import org.util.SaveMethod;
+			import org.main.Writer;
+			import org.facade.Paragraph;
+			import org.facade.ControlCenter;
+			import org.facade.Book;
+
+			private function imageAndAutoNewPage():void{
+				var controlCenter:ControlCenter = new ControlCenter();
+				controlCenter.currentPositionY = 100;
+				var book:Book = new Book();
+				controlCenter.manage(book);
+
+				var imageXObject:ImageXObject = new ImageXObject();
+				imageXObject.image = new PNGImage(new EmbeddedImages.Header());
+				imageXObject.shortXObjectName = "imageXObject";				
+				book.addScaleImage(new ScaleImage(imageXObject, 1));
+
+				var byteArray:ByteArray = Writer.generate(controlCenter.document);
+				SaveMethod.saveByteArrayToLocal(byteArray);	
+			}
+
+			private function addImage():void{
+				var controlCenter:ControlCenter = new ControlCenter();
+				var book:Book = new Book();
+				controlCenter.manage(book);
+
+				var imageXObject:ImageXObject = new ImageXObject();
+				imageXObject.image = new PNGImage(new EmbeddedImages.Header());
+				imageXObject.shortXObjectName = "imageXObject";		
+
+				var paragraph:Paragraph = new Paragraph();
+				paragraph.text = "Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! " + 
+					"Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! ";
+
+				book.addScaleImage(new ScaleImage(imageXObject, 1));
+				book.addParagraph(paragraph);
+				book.addScaleImage(new ScaleImage(imageXObject, 1));
+				book.addParagraph(paragraph);
+				book.addScaleImage(new ScaleImage(imageXObject, 0.5));
+				book.addParagraph(paragraph);
+				book.addScaleImage(new ScaleImage(imageXObject, 0.3));
+				book.addParagraph(paragraph);
+
+				var byteArray:ByteArray = Writer.generate(controlCenter.document);
+				SaveMethod.saveByteArrayToLocal(byteArray);	
+			}
+
+			private function manyParagraphWithCarriageReturn():void{
+				var controlCenter:ControlCenter = new ControlCenter();
+				controlCenter.textHeight = 15;
+
+				var book:Book = new Book();
+				controlCenter.manage(book);
+
+				var paragraph:Paragraph = new Paragraph();
+				paragraph.text = "Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! " + 
+					"Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! Hello World! ";
+
+				for(var i:int = 0 ; i < 30 ; i++){
+					book.addParagraph(paragraph);
+					book.addCarriageReturn();
+				}
+
+				var byteArray:ByteArray = Writer.generate(controlCenter.document);
+				SaveMethod.saveByteArrayToLocal(byteArray);
+			}
+
+			private function helloWorld49Paragraphs():void{
+				var controlCenter:ControlCenter = new ControlCenter();
+				var book:Book = new Book();
+				controlCenter.manage(book);
+				var paragraph:Paragraph = new Paragraph("Hello World! ", 12, null, StandardFonts.helveticaBold);
+				for(var i:int = 0 ; i < 49 ; i++){
+					book.addParagraph(paragraph);
+				}
+				var byteArray:ByteArray = Writer.generate(controlCenter.document);
+				SaveMethod.saveByteArrayToLocal(byteArray);				
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:Button label="imageAndAutoNewPage" click="imageAndAutoNewPage()" />
+	<mx:Button label="addImage" click="addImage()" />
+	<mx:Button label="manyParagraphWithCarriageReturn" click="manyParagraphWithCarriageReturn()" />
+	<mx:Button label="helloWorld49Paragraph" click="helloWorld49Paragraphs()" />
+</mx:Application>

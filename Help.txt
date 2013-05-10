@@ -1,0 +1,37 @@
+
+当前todo。
+
+==>把SkateWeb里的东西全部review一次并作整理。要有更好的命名。
+==>把那几个效果页整合到一起。
+
+
+历史todo。
+
+1、类Document中的一个方法，将会去掉注释部分。
+		public static function getPdfObjectsCount(pdfObjects:ArrayCollection):int{
+//			var pdfObjectsCount:int = 0;
+//			for each(var pdfObject:PdfObject in pdfObjects){
+//				if(pdfObject.objectNumber > pdfObjectsCount){
+//					pdfObjectsCount = pdfObject.objectNumber;
+//				}
+//			}
+//			return pdfObjectsCount + 1;
+			return pdfObjects.length + 1;
+		}
+2、嵌入字体arial.ttf使用CP1252可以写入德语的字符Ää Öö Üü ß。也可以写入法语ÀàÂâÇçÉéÈèÊêËëÎîÏïÔôÛûÙùÜüŸÿ。
+3、把PdfObject的toString()变成toByteArray()。
+4、找到度量字体宽度的方法。在PDF的writeText方法里有相关的信息。可以做到字体的换行。
+5、把字体Arial嵌套的方法提取出来。将来要支持其它的字体。不使用afm字体，单使用ttf字体即可。
+制作使用其它code page的方法，参考itext的做法。即支持俄语。
+6、参考PDF说明里的方法，来画线，线粗，颜色与填充等。
+7、在CMM里使用我的PDF工具！！！！
+8-OK、查看德语字符的宽度。
+9、制作图片。
+10、增加测试来做image。
+11、找寻某种字体的高度。
+12、HTML LINK。
+13、左右Padding。
+14、加下划线。
+15、加入UIComponent。
+16、表格的一个Cell里文字自动换行。
+17、支持一段文字里有两种字体。
